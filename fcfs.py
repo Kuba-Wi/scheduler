@@ -18,7 +18,7 @@ class FCFS(s.Strategy):
         
         return s.Schedule_state.FINISHED if busy_processors_num == 0 else s.Schedule_state.ONGOING
 
-    def __put_new_process_on_processor(self, processor) -> s.Process:
+    def put_new_process_on_processor(self, processor) -> s.Process:
         best_proc = None
         for proc in self.process_list:
             if (proc not in self.processor_process_dict.values()) and proc.time_left > 0:
@@ -37,7 +37,7 @@ class FCFS(s.Strategy):
         busy_processors_num = 0
         for processor, proc in self.processor_process_dict.items():
             if not proc:
-                added_proc = self.__put_new_process_on_processor(processor)
+                added_proc = self.put_new_process_on_processor(processor)
                 if added_proc:
                     added_proc.time_left -= 1
                     busy_processors_num += 1

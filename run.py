@@ -1,10 +1,11 @@
 import strategies as s
 import fcfs
+import priority_fcfs_simple as priority
 
 
 def main():
     processors_num = input()
-    scheduler = fcfs.FCFS(int(processors_num))
+    scheduler = priority.PriorityFcfsSimple(int(processors_num))
     while scheduler.read_line():
         scheduler.plan_time_quantum()
         scheduler.print_processor_state()
