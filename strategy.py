@@ -112,7 +112,7 @@ class StrategyWithDispossess(Strategy):
             busy_processors_num += 1
             self.processor_process_dict[busy_processors_num] = best_proc
 
-        for processor, proc in self.processor_process_dict.items():
+        for proc in self.processor_process_dict.values():
             if proc:
                 proc.time_left -= 1
 

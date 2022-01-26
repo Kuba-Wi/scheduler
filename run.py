@@ -1,11 +1,12 @@
 import strategy as s
 import fcfs
 import sjf
+import srtf
 
 
 def main():
     processors_num = input()
-    scheduler = fcfs.PriorityFcfsWithDispossess(int(processors_num))
+    scheduler = srtf.PrioritySrtf(int(processors_num))
     while scheduler.read_line():
         scheduler.plan_time_quantum()
         scheduler.print_processor_state()
