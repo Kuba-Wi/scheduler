@@ -56,6 +56,8 @@ class Strategy:
                 print('-1 ', end=' ')
         print('')
 
+
+class SimpleStrategy(Strategy):
     def _plan_time_quantum(self, strategy_function) -> Schedule_state:
         self.current_time += 1
         for processor, proc in self.processor_process_dict.items():
@@ -66,7 +68,8 @@ class Strategy:
                     proc.time_left -= 1
 
         self.__move_processes_to_lowest_free_processors()
-        busy_processors_num = self.__put_processes_on_free_processors(strategy_function)
+        busy_processors_num = self.__put_processes_on_free_processors(
+            strategy_function)
 
         return Schedule_state.FINISHED if busy_processors_num == 0 else Schedule_state.ONGOING
 
@@ -92,3 +95,25 @@ class Strategy:
         for processor in self.processor_process_dict.keys():
             self.processor_process_dict[processor] = values[i]
             i += 1
+
+
+class StrategyWithDispossess(Strategy):
+    def _plan_time_quantum(self, strategy_function) -> Schedule_state:
+        self.current_time += 1
+        for processor in self.processor_process_dict.keys():
+            self.processor_process_dict[processor] = None
+
+        busy_processors_num = 0
+        while busy_processors_num < len(self.processor_process_dict):
+            best_proc = strategy_function()
+            if not best_proc:
+                break
+
+            busy_processors_num += 1
+            self.processor_process_dict[busy_processors_num] = best_proc
+
+        for processor, proc in self.processor_process_dict.items():
+            if proc:
+                proc.time_left -= 1
+
+        return Schedule_state.FINISHED if busy_processors_num == 0 else Schedule_state.ONGOING

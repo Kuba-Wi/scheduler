@@ -1,8 +1,11 @@
 import strategy as s
 
 
-class FCFS(s.Strategy):
-    def chose_process_to_put_on_processor(self) -> s.Process:
+class FCFS(s.SimpleStrategy):
+    def plan_time_quantum(self) -> s.Schedule_state:
+        return super()._plan_time_quantum(self._chose_process_to_put_on_processor)
+
+    def _chose_process_to_put_on_processor(self) -> s.Process:
         best_proc = None
         for proc in self.process_list:
             if (proc not in self.processor_process_dict.values()) and proc.time_left > 0:
@@ -10,18 +13,12 @@ class FCFS(s.Strategy):
                     best_proc = proc
                 elif proc.start_time < best_proc.start_time:
                     best_proc = proc
-                elif proc.start_time == best_proc.start_time:
-                    if proc.priority < best_proc.priority:
-                        best_proc = proc
 
         return best_proc
 
-    def plan_time_quantum(self) -> s.Schedule_state:
-        return super()._plan_time_quantum(self.chose_process_to_put_on_processor)
 
-
-class PriorityFcfsSimple(s.Strategy):
-    def chose_process_to_put_on_processor(self) -> s.Process:
+class PriorityFcfs(s.Strategy):
+    def _chose_process_to_put_on_processor(self) -> s.Process:
         best_proc = None
         for proc in self.process_list:
             if (proc not in self.processor_process_dict.values()) and proc.time_left > 0:
@@ -35,5 +32,12 @@ class PriorityFcfsSimple(s.Strategy):
 
         return best_proc
 
+
+class SimplePriorityFcfs(s.SimpleStrategy, PriorityFcfs):
     def plan_time_quantum(self) -> s.Schedule_state:
-        return super()._plan_time_quantum(self.chose_process_to_put_on_processor)
+        return super()._plan_time_quantum(self._chose_process_to_put_on_processor)
+
+
+class PriorityFcfsWithDispossess(s.StrategyWithDispossess, PriorityFcfs):
+    def plan_time_quantum(self) -> s.Schedule_state:
+        return super()._plan_time_quantum(self._chose_process_to_put_on_processor)

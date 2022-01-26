@@ -5,7 +5,7 @@ import sjf
 
 def main():
     processors_num = input()
-    scheduler = fcfs.FCFS(int(processors_num))
+    scheduler = fcfs.PriorityFcfsWithDispossess(int(processors_num))
     while scheduler.read_line():
         scheduler.plan_time_quantum()
         scheduler.print_processor_state()
