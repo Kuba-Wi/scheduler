@@ -26,8 +26,9 @@ class Strategy:
         self.processors_num = processors_num
         self.current_time = -1
         self.process_list = []
-        self.processor_process_dict = {i + 1 : None for i in range(0, self.processors_num)}
-    
+        self.processor_process_dict = {
+            i + 1: None for i in range(0, self.processors_num)}
+
     def read_line(self) -> bool:
         line = input()
         if len(line) == 0:
@@ -55,7 +56,7 @@ class Strategy:
                 print('-1 ', end=' ')
         print('')
 
-    def plan_time_quantum(self) -> Schedule_state:
+    def _plan_time_quantum(self, strategy_function) -> Schedule_state:
         self.current_time += 1
         for processor, proc in self.processor_process_dict.items():
             if proc:
@@ -65,20 +66,18 @@ class Strategy:
                     proc.time_left -= 1
 
         self.__move_processes_to_lowest_free_processors()
-        busy_processors_num = self.__put_processes_on_free_processors()
+        busy_processors_num = self.__put_processes_on_free_processors(strategy_function)
 
         return Schedule_state.FINISHED if busy_processors_num == 0 else Schedule_state.ONGOING
 
-    def put_new_process_on_processor(self, processor) -> Process:
-        pass
-
-    def __put_processes_on_free_processors(self) -> int:
+    def __put_processes_on_free_processors(self, chose_process_to_put_on_processor) -> int:
         busy_processors_num = 0
         for processor, proc in self.processor_process_dict.items():
             if not proc:
-                added_proc = self.put_new_process_on_processor(processor)
-                if added_proc:
-                    added_proc.time_left -= 1
+                chosen_proc = chose_process_to_put_on_processor()
+                self.processor_process_dict[processor] = chosen_proc
+                if chosen_proc:
+                    chosen_proc.time_left -= 1
                     busy_processors_num += 1
             else:
                 busy_processors_num += 1
