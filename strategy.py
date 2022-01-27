@@ -1,7 +1,16 @@
 import enum
 
 
-class Schedule_state(enum.Enum):
+class StrategyCode(enum.IntEnum):
+    FCFS = 0,
+    SJF = 1,
+    SRTF = 2,
+    PRIORITY_FCFS = 4,
+    PRIORITY_SRTF = 5,
+    PRIORITY_SIMPLE_FCFS = 6
+
+
+class ScheduleState(enum.Enum):
     ONGOING = 0,
     FINISHED = 1
 
@@ -58,7 +67,7 @@ class Strategy:
 
 
 class SimpleStrategy(Strategy):
-    def _plan_time_quantum(self, strategy_function) -> Schedule_state:
+    def _plan_time_quantum(self, strategy_function) -> ScheduleState:
         self.current_time += 1
         for processor, proc in self.processor_process_dict.items():
             if proc:
@@ -71,7 +80,7 @@ class SimpleStrategy(Strategy):
         busy_processors_num = self.__put_processes_on_free_processors(
             strategy_function)
 
-        return Schedule_state.FINISHED if busy_processors_num == 0 else Schedule_state.ONGOING
+        return ScheduleState.FINISHED if busy_processors_num == 0 else ScheduleState.ONGOING
 
     def __put_processes_on_free_processors(self, chose_process_to_put_on_processor) -> int:
         busy_processors_num = 0
@@ -98,7 +107,7 @@ class SimpleStrategy(Strategy):
 
 
 class StrategyWithDispossess(Strategy):
-    def _plan_time_quantum(self, strategy_function) -> Schedule_state:
+    def _plan_time_quantum(self, strategy_function) -> ScheduleState:
         self.current_time += 1
         for processor in self.processor_process_dict.keys():
             self.processor_process_dict[processor] = None
@@ -116,4 +125,4 @@ class StrategyWithDispossess(Strategy):
             if proc:
                 proc.time_left -= 1
 
-        return Schedule_state.FINISHED if busy_processors_num == 0 else Schedule_state.ONGOING
+        return ScheduleState.FINISHED if busy_processors_num == 0 else ScheduleState.ONGOING

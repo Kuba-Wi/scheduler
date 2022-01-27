@@ -2,7 +2,7 @@ import strategy as s
 
 
 class SJF(s.SimpleStrategy):
-    def plan_time_quantum(self) -> s.Schedule_state:
+    def plan_time_quantum(self) -> s.ScheduleState:
         return super()._plan_time_quantum(self._chose_process_to_put_on_processor)
 
     def _chose_process_to_put_on_processor(self) -> s.Process:
