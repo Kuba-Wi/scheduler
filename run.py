@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import strategy as s
 import fcfs
 import sjf
@@ -22,15 +23,23 @@ def get_strategy_from_code(code):
             return None
 
 def main():
-    line = input()
-    input_list = line.split()
-    strategy_code = int(input_list[0])
-    if len(input_list) == 2:
-        processors_num = int(input_list[1])
-    else:
-        processors_num = 1
+    try:
+        line = input()
+        input_list = line.split()
+        strategy_code = int(input_list[0])
+        if len(input_list) == 2:
+            processors_num = int(input_list[1])
+        else:
+            processors_num = 1
+    except:
+        print("Wrong input, exit")
+        exit()
 
     strategy = get_strategy_from_code(strategy_code)
+    if not strategy:
+        print("Wrong strategy option")
+        exit()
+
     scheduler = strategy(int(processors_num))
     while scheduler.read_line():
         scheduler.plan_time_quantum()
