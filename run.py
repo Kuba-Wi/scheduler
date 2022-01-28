@@ -22,6 +22,7 @@ def get_strategy_from_code(code):
         case _:
             return None
 
+
 def main():
     try:
         line = input()
@@ -40,7 +41,7 @@ def main():
         print("Wrong strategy option")
         exit()
 
-    scheduler = strategy(int(processors_num))
+    scheduler = strategy(processors_num)
     while scheduler.read_line():
         scheduler.plan_time_quantum()
         scheduler.print_processor_state()
