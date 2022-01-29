@@ -5,6 +5,7 @@ class StrategyCode(enum.IntEnum):
     FCFS = 0,
     SJF = 1,
     SRTF = 2,
+    ROUND_ROBIN = 3,
     PRIORITY_FCFS = 4,
     PRIORITY_SRTF = 5,
     PRIORITY_SIMPLE_FCFS = 6
@@ -22,8 +23,8 @@ class Process:
         self.time_left = time_left
         self.start_time = start_time
 
-    @staticmethod
-    def build_process(data):
+    @classmethod
+    def build_from_list(cls, data):
         if len(data) != 4:
             return None
 
@@ -49,7 +50,7 @@ class Strategy:
         for i in range(0, len(processes_data) + 1, 3):
             data = processes_data[i:i+3]
             data.append(start_time)
-            proc = Process.build_process([int(i) for i in data])
+            proc = Process.build_from_list([int(i) for i in data])
             if proc:
                 self._process_list.append(proc)
 
@@ -64,6 +65,17 @@ class Strategy:
                 print('-1 ', end='')
         print('')
 
+    def _remove_finished_processes(self):
+        self._process_list = [
+            proc for proc in self._process_list if proc.time_left != 0]
+
+    def _move_processes_to_lowest_free_processors(self):
+        values = list(self._processor_process_dict.values())
+        values.sort(key=lambda val: 0 if val else 1)
+
+        for i in range(len(self._processor_process_dict.items())):
+            self._processor_process_dict[i + 1] = values[i]
+
 
 class SimpleStrategy(Strategy):
     def _plan_time_quantum(self, strategy_function) -> ScheduleState:
@@ -75,7 +87,8 @@ class SimpleStrategy(Strategy):
                 else:
                     proc.time_left -= 1
 
-        self.__move_processes_to_lowest_free_processors()
+        self._remove_finished_processes()
+        self._move_processes_to_lowest_free_processors()
         busy_processors_num = self.__put_processes_on_free_processors(
             strategy_function)
 
@@ -86,21 +99,16 @@ class SimpleStrategy(Strategy):
         for processor, proc in self._processor_process_dict.items():
             if not proc:
                 chosen_proc = chose_process_to_put_on_processor()
+                if not chosen_proc:
+                    break
+
+                chosen_proc.time_left -= 1
                 self._processor_process_dict[processor] = chosen_proc
-                if chosen_proc:
-                    chosen_proc.time_left -= 1
-                    busy_processors_num += 1
+                busy_processors_num += 1
             else:
                 busy_processors_num += 1
 
         return busy_processors_num
-
-    def __move_processes_to_lowest_free_processors(self):
-        values = list(self._processor_process_dict.values())
-        values.sort(key=lambda val: 0 if val else 1)
-
-        for i in range(1, len(self._processor_process_dict.items()) + 1):
-            self._processor_process_dict[i] = values[i - 1]
 
 
 class StrategyWithDispossess(Strategy):
@@ -108,6 +116,8 @@ class StrategyWithDispossess(Strategy):
         self._current_time += 1
         for processor in self._processor_process_dict.keys():
             self._processor_process_dict[processor] = None
+
+        self._remove_finished_processes()
 
         busy_processors_num = 0
         while busy_processors_num < len(self._processor_process_dict):

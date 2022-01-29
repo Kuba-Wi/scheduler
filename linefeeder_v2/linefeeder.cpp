@@ -78,6 +78,9 @@ int main(int argc, char *argv[]){
     if (argc >= 4) {
       ss << " " << argv[3];
     }
+    if (argc == 5) {
+      ss << " " << argv[4];
+    }
  
     write_to_pipe(inpipe[1], ss.str().c_str());
     read_from_pipe(outpipe[0]);
