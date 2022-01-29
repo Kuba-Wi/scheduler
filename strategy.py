@@ -100,7 +100,7 @@ class SimpleStrategy(Strategy):
             if not proc:
                 chosen_proc = chose_process_to_put_on_processor()
                 if not chosen_proc:
-                    break
+                    return busy_processors_num
 
                 chosen_proc.time_left -= 1
                 self._processor_process_dict[processor] = chosen_proc

@@ -31,13 +31,24 @@ class RoundRobin(s.Strategy):
 
         self._remove_finished_processes()
         self._move_processes_to_lowest_free_processors()
+        busy_processors_num = self.__put_processes_on_free_processors()
 
+        return s.ScheduleState.FINISHED if busy_processors_num == 0 else s.ScheduleState.ONGOING
+
+    def _chose_proc_to_put_on_processor(self):
+        for proc in self._process_list:
+            if (proc not in self._processor_process_dict.values()) and proc.time_left > 0:
+                return proc
+
+        return None
+
+    def __put_processes_on_free_processors(self) -> int:
         busy_processors_num = 0
         for processor, proc in self._processor_process_dict.items():
             if not proc:
                 chosen_proc = self._chose_proc_to_put_on_processor()
                 if not chosen_proc:
-                    break
+                    return busy_processors_num
 
                 chosen_proc.time_left -= 1
                 chosen_proc.time_quantum_left = self._time_quantum - 1
@@ -46,12 +57,4 @@ class RoundRobin(s.Strategy):
             else:
                 busy_processors_num += 1
 
-        return s.ScheduleState.FINISHED if busy_processors_num == 0 else s.ScheduleState.ONGOING               
-
-
-    def _chose_proc_to_put_on_processor(self):
-        for proc in self._process_list:
-            if (proc not in self._processor_process_dict.values()) and proc.time_left > 0:
-                return proc
-        
-        return None
+        return busy_processors_num
