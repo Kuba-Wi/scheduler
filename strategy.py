@@ -41,7 +41,7 @@ class Strategy:
 
     def read_line(self) -> bool:
         line = input()
-        if len(line) == 0:
+        if not line:
             return False
 
         processes_data = line.split()
