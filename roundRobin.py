@@ -1,3 +1,4 @@
+import sys
 import strategy as s
 
 
@@ -9,8 +10,8 @@ class ProcRoundRobin(s.Process):
 
 
 class RoundRobin(s.Strategy):
-    def __init__(self, processors_num, time_quantum):
-        super().__init__(processors_num)
+    def __init__(self, processors_num, time_quantum, input_stream=sys.stdin):
+        super().__init__(processors_num, input_stream)
 
         self._time_quantum = time_quantum
 

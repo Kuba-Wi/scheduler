@@ -1,4 +1,5 @@
 import enum
+import sys
 
 
 class StrategyCode(enum.IntEnum):
@@ -32,7 +33,8 @@ class Process:
 
 
 class Strategy:
-    def __init__(self, processors_num):
+    def __init__(self, processors_num, input_stream=sys.stdin):
+        self._inpot_stream = input_stream
         self._processors_num = processors_num
         self._current_time = -1
         self._process_list = []
@@ -40,7 +42,8 @@ class Strategy:
             i + 1: None for i in range(self._processors_num)}
 
     def read_line(self) -> bool:
-        line = input()
+        line = self._inpot_stream.readline()
+        line = line.strip()
         if not line:
             return False
 
@@ -56,13 +59,15 @@ class Strategy:
 
         return True
 
+    def get_processor_state(self) -> list:
+        return [proc.pid if proc else -1 for proc in self._processor_process_dict.values()]
+
     def print_processor_state(self):
         print(str(self._current_time), end=' ')
-        for proc in self._processor_process_dict.values():
-            if proc:
-                print(proc.pid, end=' ')
-            else:
-                print('-1 ', end='')
+
+        processor_state = self.get_processor_state()
+        for proc in processor_state:
+            print(proc, end=' ')
         print('')
 
     def _remove_finished_processes(self):
